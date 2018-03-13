@@ -35,7 +35,6 @@ class EstudianteController extends Controller
     public function store(Request $request)
     {
         $usuario= new User();
-        
         $usuario->email= $request->email;
         $usuario->password= Hash::make($request->password);
         $usuario->save();
@@ -45,10 +44,7 @@ class EstudianteController extends Controller
         $estudiante->user_id=$usuario->id;
         $estudiante->last_name=$request->last_name;
         $estudiante->save();
-        
-        
-        
-        
+
 		return response()->json(["mensaje"=>"Creado correctamente"]);
     }
     /**
