@@ -55,8 +55,9 @@ class EstudianteController extends Controller
      */
     public function show($id)
     {
-        $estudiante = Estudiante::find($id);
-        
+        $estudiante = Estudiante::with('user')->find($id);
+        $estudiante->email=$estudiante->user->email;
+
         return response()->json($estudiante);
     }
     /**
@@ -77,9 +78,18 @@ class EstudianteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id){
-       	$estudiante = Estudiante::find($id);
-        $estudiante->fill($request->all());
-		$estudiante->save();
+
+       	$estudiante = Estudiante::with('user')->find($id);
+        $usuario = User::find($estudiante->user->id);
+
+        $usuario->email= $request->email;
+        $usuario->save();
+
+        $estudiante->name=$request->name;
+        $estudiante->user_id=$usuario->id;
+        $estudiante->last_name=$request->last_name;
+        $estudiante->save();
+
 		return response()->json(["mensaje"=>"Actualizacion exitosa"]);
     }
     /**
@@ -90,8 +100,10 @@ class EstudianteController extends Controller
      */
     public function destroy($id)
     {
-        $estudiante = Estudiante::find($id);
+        $estudiante = Estudiante::with('user')->find($id);
+        $usuario = User::find($estudiante->user->id);
         $estudiante->delete();
+        $usuario->delete();
     }
 
     public function authenticate(Request $request)
@@ -100,7 +112,7 @@ class EstudianteController extends Controller
         $password=$request->password;
         
         if (Auth::attempt(['email' => $email, 'password' => $password])) {
-           return response()->json(["auth"=>"true"]);
+           return response()->json(["auth"=>"true","user"=>Auth::user()]);
         }else{
             return response()->json(["auth"=>"false"]);
         }
