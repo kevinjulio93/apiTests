@@ -30,3 +30,7 @@ Route::get('home', function () {
 });
 
 Route::post('login', 'EstudianteController@authenticate');
+
+Route::get('upload','EstudianteController@imageUpload');
+
+Route::post('pupload','EstudianteController@imageUploadPost');
